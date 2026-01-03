@@ -37,6 +37,7 @@ uv run uvicorn app.main:app --reload
 
 ## 项目结构
 
+
 ```
 nanochat/
 ├── app/                    # 应用代码
@@ -46,7 +47,10 @@ nanochat/
 │   ├── models/            # 数据模型
 │   ├── schemas/           # Pydantic 模型
 │   ├── services/          # 业务逻辑
-│   └── repositories/      # 数据访问
+│   ├── repositories/      # 数据访问
+│   ├── middleware/        # 中间件
+│   ├── utils/             # 工具函数
+│   └── workers/           # 后台任务
 ├── tests/                  # 测试代码
 ├── docker/                # Docker 配置
 └── docs/                  # 项目文档
