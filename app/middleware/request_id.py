@@ -16,8 +16,10 @@ from starlette.responses import Response
 # 请求 ID 头名称
 REQUEST_ID_HEADER = "X-Request-ID"
 
+
 class RequestIDMiddleware(BaseHTTPMiddleware):
     """请求 ID 中间件"""
+
     async def dispatch(self, request: Request, call_next: RequestResponseEndpoint) -> Response:
         # 获取或生成请求 ID
         request_id = request.headers.get(REQUEST_ID_HEADER)
@@ -36,5 +38,5 @@ class RequestIDMiddleware(BaseHTTPMiddleware):
         return response
 
 
-def get_request_id(request: Request)->str:
-    return getattr(request.state,"request_id", str(uuid.uuid4()))
+def get_request_id(request: Request) -> str:
+    return getattr(request.state, "request_id", str(uuid.uuid4()))
