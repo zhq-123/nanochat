@@ -32,8 +32,6 @@ def create_application() -> FastAPI:
     )
 
     # ==================== 注册中间件 ====================
-    # 注意：中间件的注册顺序很重要，后注册的先执行
-
     # CORS 中间件
     app.add_middleware(
         CORSMiddleware,
