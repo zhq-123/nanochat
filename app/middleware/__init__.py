@@ -5,7 +5,7 @@
 导出所有中间件类
 """
 
-from app.middleware.logging import AccessLogMiddleware
+from app.middleware.access_log import AccessLogMiddleware
 from app.middleware.request_id import RequestIDMiddleware
 
 __all__ = [

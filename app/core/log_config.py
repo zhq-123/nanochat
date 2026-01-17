@@ -6,7 +6,7 @@
 - JSON 格式：适合生产环境，便于日志收集和分析
 - TEXT 格式：适合开发环境，便于阅读
 """
-import datetime
+from datetime import datetime, timezone
 import json
 import logging
 import sys
@@ -20,7 +20,7 @@ class JSONFormatter(logging.Formatter):
 
     def format(self, record: logging.LogRecord) -> str:
         log_data: Dict[str, Any] = {
-            "timestamp": datetime.now(datetime.timezone.utc).isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
             "level": record.levelname,
             "logger": record.name,
             "message": record.getMessage(),

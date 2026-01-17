@@ -11,7 +11,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.api.v1.router import api_router
 from app.core.config import settings
 from app.core.events import lifespan
-from app.core.logging import setup_logging
+from app.core.log_config import setup_logging
 from app.middleware import AccessLogMiddleware, RequestIDMiddleware
 
 # 配置日志
@@ -77,8 +77,8 @@ if __name__ == "__main__":
     import uvicorn
 
     uvicorn.run(
-        "app.main:app",
-        host="0.0.0.0",
+        "main:app",
+        host="127.0.0.1",
         port=8000,
         reload=settings.DEBUG,
         log_level=settings.LOG_LEVEL.lower(),

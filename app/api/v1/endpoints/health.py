@@ -51,7 +51,7 @@ async def health_check(
         ("database", _check_database(settings)),
         ("redis", _check_redis(settings)),
         ("rabbitmq", _check_rabbitmq(settings)),
-        ("storage", _check_storage(settings)),
+        ("minio", _check_minio(settings)),
     ]
 
     results = await asyncio.gather(
@@ -78,7 +78,7 @@ async def health_check(
         "status": overall_status,
         "checks": checks,
         "version": settings.APP_VERSION,
-        "environment": settings.environm,
+        "environment": settings.APP_ENV,
         "timestamp": datetime.now(timezone.utc).isoformat(),
     }
 
@@ -86,7 +86,7 @@ async def health_check(
 @router.get(
     "/live",
     summary="存活检查",
-    description="简单的存活检查，用于 K8s liveness probe",
+    description="简单的存活检查",
 )
 async def liveness() -> dict[str, Any]:
     return {"status": "ok"}
@@ -128,7 +128,7 @@ async def _check_redis(settings):
             decode_responses=True
         )
         await redis_client.ping()
-        await redis_client.close
+        await redis_client.close()
 
         latency = (time.time() - start_time) * 1000
         return {
@@ -164,7 +164,7 @@ async def _check_rabbitmq(settings):
         }
 
 
-async def _check_storage(settings):
+async def _check_minio(settings):
     """检查 MinIO 连接"""
     start_time = time.time()
     try:
