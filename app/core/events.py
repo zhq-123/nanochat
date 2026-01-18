@@ -11,6 +11,7 @@ from typing import AsyncGenerator
 from fastapi import FastAPI
 
 from app.core.config import settings
+from app.db.session import init_database, close_database
 
 logger = logging.getLogger(__name__)
 
@@ -38,7 +39,7 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
             "environment": settings.APP_ENV,
             "debug": settings.DEBUG
         })
-    # await init_database()
+    await init_database()
 
     # 初始化 Redis 连接池
     # await init_redis()
@@ -52,7 +53,7 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     logger.info("Shutting down application...")
 
     # 关闭数据库连接池
-    # await close_database()
+    await close_database()
 
     # 关闭 Redis 连接池
     # await close_redis()
