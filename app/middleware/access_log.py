@@ -22,16 +22,28 @@ logger = logging.getLogger(__name__)
 
 
 class AccessLogMiddleware(BaseHTTPMiddleware):
+    """访问日志中间件"""
+
+    # 不记录日志的路径
+    SKIP_PATHS = {
+        "/health",
+        "/api/v1/health",
+        "/api/v1/health/live",
+        "/api/v1/health/ready",
+        "/metrics",
+        "/favicon.ico",
+    }
+
     async def dispatch(self, request: Request, call_next: Callable) -> Response:
+        # 跳过某些路径
+        if request.url.path in self.SKIP_PATHS:
+            return await call_next(request)
+
         # 记录开始时间
         start_time = time.time()
 
         # 获取请求信息
-        request_id = get_request_id(request)
-        method = request.method
-        path = request.url.path
-        query_string = str(request.url.query) if request.url.query else ""
-        client_ip = self._get_client_ip(request)
+        request_info = self._get_request_info(request)
 
         # 处理请求
         response: Response = await call_next(request)
@@ -40,24 +52,24 @@ class AccessLogMiddleware(BaseHTTPMiddleware):
         process_time = (time.time() - start_time) * 1000  # 毫秒
 
         # 记录访问日志
-        logger.info(
-            "request_completed",
-            extra={
-                "request_id": request_id,
-                "method": method,
-                "path": path,
-                "query_string": query_string,
-                "status_code": response.status_code,
-                "process_time_ms": round(process_time, 2),
-                "client_ip": client_ip,
-                "user_agent": request.headers.get("user-agent", ""),
-            }
-        )
+        self._log_request(request_info, response, process_time)
 
         # 添加处理时间到响应头
         response.headers["X-Process-Time"] = f"{process_time:.2f}ms"
 
         return response
+
+    def _get_request_info(self, request: Request) -> dict:
+        """获取请求信息"""
+        return {
+            "method": request.method,
+            "path": request.url.path,
+            "query_string": str(request.url.query) if request.url.query else "",
+            "client_ip": self._get_client_ip(request),
+            "user_agent": request.headers.get("user-agent", ""),
+            "content_length": request.headers.get("content-length", "0"),
+            "content_type": request.headers.get("content-type", ""),
+        }
 
     def _get_client_ip(self, request:Request)->str:
         """获取客户端真实 IP"""
@@ -75,3 +87,34 @@ class AccessLogMiddleware(BaseHTTPMiddleware):
             return request.client.host
 
         return "unknown"
+
+    def _log_request(
+            self, request_info: dict, response: Response, process_time: float
+    ) -> None:
+        """记录请求日志"""
+        status_code = response.status_code
+
+        # 根据状态码选择日志级别
+        if status_code >= 500:
+            log_level = logging.ERROR
+        elif status_code >= 400:
+            log_level = logging.WARNING
+        else:
+            log_level = logging.INFO
+
+        # 构建日志消息
+        message = (
+            f"{request_info['method']} {request_info['path']} "
+            f"- {status_code} - {process_time:.2f}ms"
+        )
+
+        logger.log(
+            log_level,
+            message,
+            extra={
+                **request_info,
+                "status_code": status_code,
+                "process_time_ms": round(process_time, 2),
+                "response_size": response.headers.get("content-length", "0"),
+            },
+        )

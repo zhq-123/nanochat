@@ -39,7 +39,7 @@ class BusinessException(Exception):
         self.errors = errors
         super().__init__(self.message)
 
-    def to_dict(self) -> Dict[str:Any]:
+    def to_dict(self) -> Dict[str, Any]:
         """转换为字典格式"""
         result = {
             "code": self.code,

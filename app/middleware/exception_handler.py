@@ -15,9 +15,8 @@ from starlette.requests import Request
 from starlette.responses import JSONResponse
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
-from app.core.error_codes import ErrorCode
-from app.core.exceptions import BusinessException
-from app.schemas.response import ErrorDetail, ErrorResponse
+from app.core import BusinessException, ErrorCode
+from app.schemas import ErrorDetail, ErrorResponse
 
 logger = logging.getLogger(__name__)
 

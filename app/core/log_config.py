@@ -5,15 +5,30 @@
 支持两种日志格式：
 - JSON 格式：适合生产环境，便于日志收集和分析
 - TEXT 格式：适合开发环境，便于阅读
+- 请求 ID 追踪
+- 结构化上下文信息
 """
+from contextvars import ContextVar
 from datetime import datetime, timezone
 import json
 import logging
 import sys
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 
 from app.core.config import settings
 
+
+request_id_var:ContextVar[Optional[str]] = ContextVar("request_id",  default=None)
+
+
+class RequestIdFilter(logging.Filter):
+    """
+    日志过滤器：添加 request_id 到日志记录
+    """
+
+    def filter(self, record: logging.LogRecord) -> bool:
+        record.request_id = request_id_var.get() or "-"
+        return True
 
 class JSONFormatter(logging.Formatter):
     """JSON 格式日志格式化器"""
@@ -24,6 +39,7 @@ class JSONFormatter(logging.Formatter):
             "level": record.levelname,
             "logger": record.name,
             "message": record.getMessage(),
+            "request_id": getattr(record, "request_id", "-"),
         }
 
         # 添加额外字段
@@ -71,6 +87,9 @@ def setup_logging() -> None:
     console_handler = logging.StreamHandler(sys.stdout)
     console_handler.setLevel(getattr(logging, settings.LOG_LEVEL.upper()))
 
+    # 添加请求 ID 过滤器
+    console_handler.addFilter(RequestIdFilter())
+
     # 根据配置选择格式化器
     if settings.LOG_FORMAT.lower() == "json":
         formatter = JSONFormatter()
@@ -81,12 +100,39 @@ def setup_logging() -> None:
     root_logger.addHandler(console_handler)
 
     # 设置第三方库日志级别
+    _configure_third_party_loggers()
+
+    # 记录日志系统初始化
+    logging.info(
+        "Logging system initialized",
+        extra={
+            "log_level": settings.LOG_LEVEL,
+            "log_format": settings.LOG_FORMAT,
+        },
+    )
+
+
+def _configure_third_party_loggers() -> None:
+    """配置第三方库的日志级别"""
+    # uvicorn
     logging.getLogger("uvicorn").setLevel(logging.INFO)
     logging.getLogger("uvicorn.access").setLevel(logging.WARNING)
+    logging.getLogger("uvicorn.error").setLevel(logging.INFO)
+
+    # SQLAlchemy
     logging.getLogger("sqlalchemy.engine").setLevel(
         logging.DEBUG if settings.DATABASE_ECHO else logging.WARNING
     )
+    logging.getLogger("sqlalchemy.pool").setLevel(logging.WARNING)
+
+    # 消息队列
     logging.getLogger("aio_pika").setLevel(logging.WARNING)
     logging.getLogger("aiormq").setLevel(logging.WARNING)
 
-    logging.info("Logging configured", extra={"format": settings.LOG_FORMAT})
+    # HTTP 客户端
+    logging.getLogger("httpx").setLevel(logging.WARNING)
+    logging.getLogger("httpcore").setLevel(logging.WARNING)
+
+    # 其他
+    logging.getLogger("asyncio").setLevel(logging.WARNING)
+    logging.getLogger("multipart").setLevel(logging.WARNING)
