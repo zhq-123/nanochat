@@ -9,7 +9,7 @@ from typing import TypeVar, Optional, Any, List
 from starlette.requests import Request
 
 from app.core.error_codes import ErrorCode, get_error_message
-from app.schemas.response import SuccessResponse, Response, ErrorResponse, ErrorDetail, PaginatedResponse, \
+from app.schemas.response import Response, ErrorResponse, ErrorDetail, PaginatedResponse, \
     PaginationMeta
 
 T = TypeVar("T")
@@ -73,12 +73,12 @@ def error_response(
 
 
 def paginated_response(
-    data: List[T],
-    total: int,
-    page: int,
-    page_size: int,
-    message: str = "success",
-    request: Optional[Request] = None,
+        data: List[T],
+        total: int,
+        page: int,
+        page_size: int,
+        message: str = "success",
+        request: Optional[Request] = None,
 ) -> PaginatedResponse[T]:
     """
     创建分页响应
