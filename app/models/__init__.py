@@ -29,4 +29,14 @@ __all__ = [
     "TimestampMixin",
     "SoftDeleteMixin",
     "TenantMixin",
+    # 租户
+    "Tenant",
+    "TenantPlan",
+    "TenantStatus",
+    "DEFAULT_QUOTAS",
+    # 用户
+    "User",
 ]
+
+from app.models.tenant import TenantPlan, TenantStatus, Tenant, DEFAULT_QUOTAS
+from app.models.user import User
