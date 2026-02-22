@@ -16,7 +16,7 @@ from app.core import BusinessException, ErrorCode, ValidationException, Authenti
 from app.core.security import hash_password, check_password_strength, verify_password
 from app.models import User, Tenant, TenantPlan, DEFAULT_QUOTAS
 from app.repositories import UserRepository, TenantRepository
-from app.schemas import RegisterRequest, RegisterResponse, LoginRequest
+from app.schemas import RegisterRequest, LoginRequest
 
 logger = logging.getLogger(__name__)
 
@@ -257,7 +257,7 @@ class UserService:
             "Tenant created",
             extra={
                 "tenant_id": str(tenant.id),
-                "name": tenant.name,
+                "tenant_name": tenant.name,
                 "slug": tenant.slug,
             },
         )

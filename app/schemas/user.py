@@ -5,8 +5,9 @@
 
 from datetime import datetime
 from typing import Optional
+from uuid import UUID
 
-from pydantic import BaseModel, EmailStr, Field, field_validator
+from pydantic import BaseModel, Field, field_validator
 
 from app.schemas.tenant import TenantBrief
 
@@ -14,7 +15,7 @@ from app.schemas.tenant import TenantBrief
 class UserBase(BaseModel):
     """用户基础模型"""
 
-    email: EmailStr = Field(..., description="邮箱")
+    email: str = Field(..., description="邮箱")
     username: str = Field(..., min_length=2, max_length=50, description="用户名")
 
 
@@ -47,7 +48,7 @@ class UserUpdate(BaseModel):
 class UserOut(UserBase):
     """用户输出模型"""
 
-    id: str = Field(description="用户ID")
+    id: UUID = Field(description="用户ID")
     full_name: Optional[str] = Field(default=None, description="全名")
     avatar_url: Optional[str] = Field(default=None, description="头像URL")
     phone: Optional[str] = Field(default=None, description="手机号")
@@ -74,7 +75,7 @@ class UserWithTenant(UserOut):
 class UserBrief(BaseModel):
     """用户简要信息"""
 
-    id: str
+    id: UUID
     email: str
     username: str
     full_name: Optional[str] = None

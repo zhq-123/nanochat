@@ -6,6 +6,7 @@
 - 密码加密与验证
 - 安全相关配置
 """
+import bcrypt
 from passlib.context import CryptContext
 
 # 密码哈希上下文
@@ -17,30 +18,16 @@ pwd_context = CryptContext(
 
 
 def hash_password(password: str) -> str:
-    """
-    对密码进行哈希加密
-
-    Args:
-        password: 明文密码
-
-    Returns:
-        str: 哈希后的密码
-    """
-    return pwd_context.hash(password)
+    """Hash a password using bcrypt"""
+    return bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
 
 
-def verify_password(plain_password: str, hashed_password: str) -> bool:
-    """
-    验证密码
-
-    Args:
-        plain_password: 明文密码
-        hashed_password: 哈希密码
-
-    Returns:
-        bool: 密码是否匹配
-    """
-    return pwd_context.verify(plain_password, hashed_password)
+def verify_password(plain_password: str, hashed: str) -> bool:
+    """Verify a password against its hash"""
+    return bcrypt.checkpw(
+        plain_password.encode("utf-8"),
+        hashed.encode("utf-8"),
+    )
 
 
 def check_password_strength(password: str) -> tuple[bool, str]:
@@ -62,9 +49,6 @@ def check_password_strength(password: str) -> tuple[bool, str]:
     """
     if len(password) < 8:
         return False, "密码长度至少为 8 个字符"
-
-    if not any(c.isupper() for c in password):
-        return False, "密码必须包含大写字母"
 
     if not any(c.islower() for c in password):
         return False, "密码必须包含小写字母"

@@ -4,8 +4,9 @@
 """
 
 from typing import Optional
+from uuid import UUID
 
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import BaseModel, Field
 
 from app.schemas.user import UserOut
 
@@ -13,7 +14,7 @@ from app.schemas.user import UserOut
 class RegisterRequest(BaseModel):
     """注册请求"""
 
-    email: EmailStr = Field(..., description="邮箱")
+    email: str = Field(..., description="邮箱")
     username: str = Field(..., min_length=2, max_length=50, description="用户名")
     password: str = Field(..., min_length=8, max_length=128, description="密码")
     full_name: Optional[str] = Field(None, max_length=100, description="全名")
@@ -23,7 +24,7 @@ class RegisterRequest(BaseModel):
 class LoginRequest(BaseModel):
     """登录请求"""
 
-    email: EmailStr = Field(..., description="邮箱")
+    email: str = Field(..., description="邮箱")
     password: str = Field(..., description="密码")
 
 
@@ -41,5 +42,5 @@ class RegisterResponse(BaseModel):
     """注册响应"""
 
     user: UserOut = Field(description="用户信息")
-    tenant_id: str = Field(description="租户ID")
+    tenant_id: UUID = Field(description="租户ID")
     message: str = Field(default="注册成功", description="消息")

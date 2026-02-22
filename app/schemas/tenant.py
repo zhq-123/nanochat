@@ -4,6 +4,7 @@
 """
 from datetime import datetime
 from typing import Optional, Dict, Any
+from uuid import UUID
 
 from pydantic import BaseModel, Field
 
@@ -38,7 +39,7 @@ class TenantUpdate(BaseModel):
 class TenantOut(TenantBase):
     """租户输出模型"""
 
-    id: str = Field(description="租户ID")
+    id: UUID = Field(description="租户ID")
     plan: str = Field(description="套餐类型")
     status: str = Field(description="租户状态")
     settings: Optional[Dict[str, Any]] = Field(default=None, description="租户配置")
@@ -54,7 +55,7 @@ class TenantOut(TenantBase):
 class TenantBrief(BaseModel):
     """租户简要信息"""
 
-    id: str
+    id: UUID
     name: str
     slug: str
     plan: str

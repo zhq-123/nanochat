@@ -8,9 +8,11 @@ API 依赖注入模块
 - 分页参数
 - 等等
 """
-from typing import Optional
+from typing import Optional, AsyncGenerator
 
 from fastapi.params import Query
+from sqlalchemy.ext.asyncio import AsyncSession
+from app.db import get_async_session
 
 from app.core.config import Settings, get_settings
 
@@ -18,6 +20,21 @@ from app.core.config import Settings, get_settings
 def get_settings_dep() -> Settings:
     """获取配置依赖"""
     return get_settings()
+
+
+async def get_db() -> AsyncGenerator[AsyncSession, None]:
+    """
+    获取数据库会话依赖
+
+    用于 FastAPI 路由中注入数据库会话
+
+    Usage:
+        @router.get("/users")
+        async def get_users(db: AsyncSession = Depends(get_db)):
+            ...
+    """
+    async for session in get_async_session():
+        yield session
 
 
 class PaginationParams:
