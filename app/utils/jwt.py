@@ -8,7 +8,7 @@ JWT Token 管理模块
 - Token 载荷定义
 """
 import uuid
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Optional
 
 from jose import jwt, JWTError
@@ -189,7 +189,7 @@ def verify_token(token: str, expected_type: str) -> Optional[TokenPayload]:
         return None
 
     # 验证是否过期
-    if payload.exp < datetime.utcnow():
+    if payload.exp < datetime.now(timezone.utc):
         return None
 
     return payload

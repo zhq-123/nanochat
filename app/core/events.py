@@ -43,12 +43,7 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     await init_database()
 
     # 初始化 Redis 连接池
-    try:
-        await init_redis()
-        logger.info("Redis connection initialized")
-    except Exception as e:
-        logger.error(f"Failed to initialize Redis: {e}")
-        raise
+    await init_redis()
 
     # 初始化其他服务
     logger.info("Application startup complete")

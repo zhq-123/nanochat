@@ -8,8 +8,8 @@ Token 服务
 """
 import logging
 
-from app.core import RedisClient
-from app.core.redis import get_redis
+
+from app.core.redis import get_redis, RedisClient
 from app.utils.jwt import decode_token, get_token_remaining_time
 
 logger = logging.getLogger(__name__)

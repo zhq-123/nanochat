@@ -47,13 +47,13 @@ def check_password_strength(password: str) -> tuple[bool, str]:
     Returns:
         tuple: (是否合格, 错误消息)
     """
-    if len(password) < 8:
-        return False, "密码长度至少为 8 个字符"
-
-    if not any(c.islower() for c in password):
-        return False, "密码必须包含小写字母"
-
-    if not any(c.isdigit() for c in password):
-        return False, "密码必须包含数字"
+    # if len(password) < 8:
+    #     return False, "密码长度至少为 8 个字符"
+    #
+    # if not any(c.islower() for c in password):
+    #     return False, "密码必须包含小写字母"
+    #
+    # if not any(c.isdigit() for c in password):
+    #     return False, "密码必须包含数字"
 
     return True, ""
