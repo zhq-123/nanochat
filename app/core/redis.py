@@ -85,6 +85,9 @@ class RedisClient:
             px: 过期时间（毫秒）
         """
         return await self.client.set(key, value, ex=ex, px=px)
+    async def delete(self, *keys: str) -> int:
+        """删除键"""
+        return await self.client.delete(*keys)
 
     async def exists(self, *keys: str) -> int:
         """检查键是否存在"""

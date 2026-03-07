@@ -32,4 +32,7 @@ __all__ = [
     "DatabaseException",
     "FileException",
     "ModelException",
+    "RedisClient",
 ]
+
+from app.core.redis import RedisClient
