@@ -5,7 +5,17 @@ Pydantic 模型模块
 导出所有 Schema
 """
 
-from app.schemas.auth import LoginRequest, LoginResponse, RegisterRequest, RegisterResponse
+from app.schemas.auth import (
+    ChangePasswordRequest,
+    LoginRequest,
+    LoginResponse,
+    LogoutRequest,
+    RefreshTokenRequest,
+    RefreshTokenResponse,
+    RegisterRequest,
+    RegisterResponse,
+    TokenResponse,
+)
 from app.schemas.response import (
     ErrorDetail,
     ErrorResponse,
@@ -41,4 +51,9 @@ __all__ = [
     "RegisterResponse",
     "LoginRequest",
     "LoginResponse",
+    "TokenResponse",
+    "RefreshTokenRequest",
+    "RefreshTokenResponse",
+    "LogoutRequest",
+    "ChangePasswordRequest",
 ]

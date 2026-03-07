@@ -14,8 +14,8 @@ from app.api.deps import DBSession, CurrentUser
 from app.core import settings, AuthenticationException, ErrorCode
 from app.schemas import RegisterResponse, RegisterRequest, Response, UserOut, LoginResponse, LoginRequest
 from app.schemas.auth import TokenResponse, RefreshTokenResponse, RefreshTokenRequest, LogoutRequest
-from app.services import UserService
-from app.services.token_service import TokenService, get_token_service
+from app.services import UserService, TokenService, get_token_service
+
 from app.utils import success_response
 from app.utils.jwt import create_token_pair, verify_token, TokenType, decode_token
 

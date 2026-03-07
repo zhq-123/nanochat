@@ -11,6 +11,7 @@ from typing import AsyncGenerator
 from fastapi import FastAPI
 
 from app.core.config import settings
+from app.core.redis import init_redis, close_redis
 from app.db.session import init_database, close_database
 
 logger = logging.getLogger(__name__)
@@ -42,7 +43,12 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     await init_database()
 
     # 初始化 Redis 连接池
-    # await init_redis()
+    try:
+        await init_redis()
+        logger.info("Redis connection initialized")
+    except Exception as e:
+        logger.error(f"Failed to initialize Redis: {e}")
+        raise
 
     # 初始化其他服务
     logger.info("Application startup complete")
@@ -56,6 +62,7 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     await close_database()
 
     # 关闭 Redis 连接池
-    # await close_redis()
+    await close_redis()
+    logger.info("Redis connection closed")
 
     logger.info("Application shutdown complete")
