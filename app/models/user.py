@@ -5,7 +5,7 @@
 用户是系统的核心实体，属于某个租户
 """
 from datetime import datetime
-from typing import Optional
+from typing import Optional, List
 from uuid import UUID
 
 from sqlalchemy import Index, DateTime, Boolean, String, Text, ForeignKey
@@ -127,6 +127,82 @@ class User(BaseModel):
         back_populates="users",
         lazy="joined",
     )
+
+    roles: Mapped[List["Role"]] = relationship(
+        "Role",
+        secondary="user_roles",
+        back_populates="users",
+        lazy="selectin",
+    )
+
+    # ==================== 权限方法 ====================
+    def get_permissions(self) -> set:
+        """
+        获取用户所有权限
+
+        Returns:
+            set: 权限代码集合
+        """
+        permissions = set()
+        for role in self.roles:
+            permissions.update(role.get_all_permissions())
+        return permissions
+
+    def has_permission(self, permission_code: str) -> bool:
+        """
+        检查用户是否有指定权限
+
+        Args:
+            permission_code: 权限代码
+
+        Returns:
+            bool: 是否有权限
+        """
+        # 超级管理员拥有所有权限
+        if self.is_superuser:
+            return True
+
+        permissions = self.get_permissions()
+
+        # 检查完全匹配
+        if permission_code in permissions:
+            return True
+
+        # 检查通配符匹配
+        # *:* 表示所有权限
+        if "*:*" in permissions:
+            return True
+
+        # resource:* 表示该资源的所有操作
+        resource = permission_code.split(":")[0]
+        if f"{resource}:*" in permissions:
+            return True
+
+        return False
+
+    def has_any_permission(self, *permission_codes: str) -> bool:
+        """
+        检查用户是否有任一权限
+
+        Args:
+            *permission_codes: 权限代码列表
+
+        Returns:
+            bool: 是否有任一权限
+        """
+        return any(self.has_permission(code) for code in permission_codes)
+
+    def has_all_permissions(self, *permission_codes: str) -> bool:
+        """
+        检查用户是否有全部权限
+
+        Args:
+            *permission_codes: 权限代码列表
+
+        Returns:
+            bool: 是否有全部权限
+        """
+        return all(self.has_permission(code) for code in permission_codes)
 
     # ==================== 索引 ====================
     __table_args__ = (
