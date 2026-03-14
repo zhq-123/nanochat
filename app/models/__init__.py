@@ -1,8 +1,6 @@
 # app/models/__init__.py
 """
 数据模型模块
-
-集中导出所有模型类，便于 Alembic 发现模型
 """
 
 from app.models.base import (
@@ -16,6 +14,11 @@ from app.models.base import (
     TimestampMixin,
     UUIDMixin,
 )
+from app.models.tenant import DEFAULT_QUOTAS, Tenant, TenantPlan, TenantStatus
+from app.models.user import User
+from app.models.permission import Permission, SYSTEM_PERMISSIONS
+from app.models.role import Role, role_permissions
+from app.models.user_role import UserRoleAssignment, user_roles
 
 __all__ = [
     # 基类
@@ -36,7 +39,13 @@ __all__ = [
     "DEFAULT_QUOTAS",
     # 用户
     "User",
+    # 权限
+    "Permission",
+    "SYSTEM_PERMISSIONS",
+    # 角色
+    "Role",
+    "role_permissions",
+    # 用户角色
+    "UserRoleAssignment",
+    "user_roles",
 ]
-
-from app.models.tenant import TenantPlan, TenantStatus, Tenant, DEFAULT_QUOTAS
-from app.models.user import User
