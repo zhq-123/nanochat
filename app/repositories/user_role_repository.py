@@ -10,7 +10,7 @@ from uuid import UUID
 
 from sqlalchemy import select, delete, and_
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import joinedload, selectinload
+from sqlalchemy.orm import selectinload
 
 from app.models.role import Role
 from app.models.user import User

@@ -8,14 +8,14 @@ API 依赖注入模块
 - 分页参数
 - 等等
 """
-from typing import Optional, AsyncGenerator, Annotated
+from typing import Optional, AsyncGenerator, Annotated, List
 
 from fastapi import Depends
 from fastapi.params import Query
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core import AuthenticationException, ErrorCode
+from app.core import AuthenticationException, ErrorCode, AuthorizationException
 from app.db import get_async_session
 
 from app.core.config import Settings, get_settings
@@ -222,6 +222,165 @@ async def get_optional_user(
 
 
 # 类型别名，便于路由中使用
+CurrentUser = Annotated[User, Depends(get_current_user)]
+CurrentSuperuser = Annotated[User, Depends(get_current_superuser)]
+OptionalUser = Annotated[Optional[User], Depends(get_optional_user)]
+DBSession = Annotated[AsyncSession, Depends(get_db)]
+
+
+class PermissionChecker:
+    """
+    权限检查器
+
+    用于检查用户是否有指定权限
+    """
+
+    def __init__(
+        self,
+        required_permissions: List[str],
+        require_all: bool = True,
+    ):
+        """
+        初始化权限检查器
+
+        Args:
+            required_permissions: 需要的权限列表
+            require_all: 是否需要全部权限（True）还是任一权限（False）
+        """
+        self.required_permissions = required_permissions
+        self.require_all = require_all
+
+    async def __call__(
+            self,
+            current_user: Annotated[User, Depends(get_current_user)],
+    ) -> User:
+        """
+        检查权限
+
+        Args:
+            current_user: 当前用户
+
+        Returns:
+            User: 当前用户
+
+        Raises:
+            AuthorizationException: 权限不足
+        """
+        if self.require_all:
+            has_permission = current_user.has_all_permissions(*self.required_permissions)
+        else:
+            has_permission = current_user.has_any_permission(*self.required_permissions)
+
+        if not has_permission:
+            raise AuthorizationException(
+                code=ErrorCode.PERMISSION_DENIED,
+                message="权限不足",
+                required_permissions=self.required_permissions,
+            )
+
+        return current_user
+
+
+def require_permissions(*permissions: str, require_all: bool = True):
+    """
+    权限依赖工厂函数
+
+    用法:
+        @router.get("/users")
+        async def list_users(
+            user: User = Depends(require_permissions("user:list"))
+        ):
+            ...
+
+    Args:
+        *permissions: 需要的权限
+        require_all: 是否需要全部权限
+
+    Returns:
+        PermissionChecker: 权限检查器
+    """
+    return PermissionChecker(list(permissions), require_all)
+
+
+def require_any_permission(*permissions: str):
+    """
+    需要任一权限
+
+    Args:
+        *permissions: 权限列表
+
+    Returns:
+        PermissionChecker: 权限检查器
+    """
+    return PermissionChecker(list(permissions), require_all=False)
+
+
+class ResourceOwnerChecker:
+    """
+    资源所有者检查器
+
+    用于检查用户是否是资源的所有者或有管理权限
+    """
+
+    def __init__(
+        self,
+        resource_type: str,
+        admin_permission: Optional[str] = None,
+    ):
+        """
+        初始化资源所有者检查器
+
+        Args:
+            resource_type: 资源类型
+            admin_permission: 管理员权限（有此权限可跳过所有者检查）
+        """
+        self.resource_type = resource_type
+        self.admin_permission = admin_permission
+
+    def check(
+            self,
+            user: User,
+            resource_owner_id: str,
+    ) -> bool:
+        """
+        检查用户是否有权访问资源
+
+        Args:
+            user: 用户
+            resource_owner_id: 资源所有者ID
+
+        Returns:
+            bool: 是否有权限
+        """
+        # 超级管理员直接通过
+        if user.is_superuser:
+            return True
+
+        # 检查管理员权限
+        if self.admin_permission and user.has_permission(self.admin_permission):
+            return True
+
+        # 检查是否是所有者
+        return str(user.id) == resource_owner_id
+
+
+# 常用资源检查器
+conversation_owner_checker = ResourceOwnerChecker(
+    resource_type="conversation",
+    admin_permission="conversation:*",
+)
+
+knowledge_base_owner_checker = ResourceOwnerChecker(
+    resource_type="knowledge_base",
+    admin_permission="knowledge_base:*",
+)
+
+agent_owner_checker = ResourceOwnerChecker(
+    resource_type="agent",
+    admin_permission="agent:*",
+)
+
+# 类型别名
 CurrentUser = Annotated[User, Depends(get_current_user)]
 CurrentSuperuser = Annotated[User, Depends(get_current_superuser)]
 OptionalUser = Annotated[Optional[User], Depends(get_optional_user)]
