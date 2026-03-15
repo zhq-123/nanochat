@@ -61,7 +61,7 @@ class RoleRepository(BaseRepository[Role]):
         self,
         tenant_id: UUID,
         include_system: bool = True,
-    ) -> List[Role]:
+    ) -> list[Role]:
         """
         获取租户的角色列表
 
@@ -70,7 +70,7 @@ class RoleRepository(BaseRepository[Role]):
             include_system: 是否包含系统角色
 
         Returns:
-            List[Role]: 角色列表
+            list[Role]: 角色列表
         """
         query = select(Role).options(
             selectinload(Role.permissions),
@@ -165,7 +165,7 @@ class RoleRepository(BaseRepository[Role]):
     async def add_permissions(
         self,
         role: Role,
-        permissions: List[Permission],
+        permissions: list[Permission],
     ) -> Role:
         """
         为角色添加权限
@@ -188,7 +188,7 @@ class RoleRepository(BaseRepository[Role]):
     async def set_permissions(
         self,
         role: Role,
-        permissions: List[Permission],
+        permissions: list[Permission],
     ) -> Role:
         """
         设置角色权限（替换现有权限）
@@ -208,7 +208,7 @@ class RoleRepository(BaseRepository[Role]):
     async def remove_permissions(
         self,
         role: Role,
-        permissions: List[Permission],
+        permissions: list[Permission],
     ) -> Role:
         """
         移除角色权限

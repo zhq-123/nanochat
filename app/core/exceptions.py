@@ -31,7 +31,7 @@ class BusinessException(Exception):
                  code: ErrorCode = ErrorCode.SYSTEM_ERROR,
                  message: Optional[str] = None,
                  data: Any = None,
-                 errors: Optional[List[Dict[str, Any]]] = None,
+                 errors: Optional[list[Dict[str, Any]]] = None,
                  ):
         self.code = code
         self.message = message or get_error_message(code)
@@ -81,7 +81,7 @@ class ValidationException(BusinessException):
     def __init__(
         self,
         message: str = "参数校验失败",
-        errors: Optional[List[Dict[str, Any]]] = None,
+        errors: Optional[list[Dict[str, Any]]] = None,
         **kwargs,
     ):
         super().__init__(

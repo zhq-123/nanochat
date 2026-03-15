@@ -89,7 +89,7 @@ class RoleService:
         logger.info(f"Initialized {count} permissions")
         return count
 
-    async def init_tenant_roles(self, tenant_id: UUID) -> List[Role]:
+    async def init_tenant_roles(self, tenant_id: UUID) -> list[Role]:
         """
         初始化租户默认角色
 
@@ -97,7 +97,7 @@ class RoleService:
             tenant_id: 租户ID
 
         Returns:
-            List[Role]: 创建的角色列表
+            list[Role]: 创建的角色列表
         """
         roles = []
         for code, config in DEFAULT_ROLES.items():
@@ -138,7 +138,7 @@ class RoleService:
         code: str,
         name: str,
         description: Optional[str] = None,
-        permission_codes: Optional[List[str]] = None,
+        permission_codes: Optional[list[str]] = None,
         parent_id: Optional[UUID] = None,
     ) -> Role:
         """
@@ -195,7 +195,7 @@ class RoleService:
         tenant_id: UUID,
         name: Optional[str] = None,
         description: Optional[str] = None,
-        permission_codes: Optional[List[str]] = None,
+        permission_codes: Optional[list[str]] = None,
     ) -> Role:
         """
         更新角色
@@ -323,7 +323,7 @@ class RoleService:
         self,
         tenant_id: UUID,
         include_system: bool = True,
-    ) -> List[Role]:
+    ) -> list[Role]:
         """
         获取租户的角色列表
 
@@ -332,7 +332,7 @@ class RoleService:
             include_system: 是否包含系统角色
 
         Returns:
-            List[Role]: 角色列表
+            list[Role]: 角色列表
         """
         return await self.role_repo.get_by_tenant(tenant_id, include_system)
 
@@ -437,7 +437,7 @@ class RoleService:
         self,
         user_id: UUID,
         tenant_id: Optional[UUID] = None,
-    ) -> List[Role]:
+    ) -> list[Role]:
         """
         获取用户的角色
 
@@ -446,16 +446,16 @@ class RoleService:
             tenant_id: 租户ID
 
         Returns:
-            List[Role]: 角色列表
+            list[Role]: 角色列表
         """
         return await self.user_role_repo.get_user_roles(user_id, tenant_id)
 
-    async def get_all_permissions(self) -> List[Permission]:
+    async def get_all_permissions(self) -> list[Permission]:
         """
         获取所有权限
 
         Returns:
-            List[Permission]: 权限列表
+            list[Permission]: 权限列表
         """
         return await self.permission_repo.get_all()
 

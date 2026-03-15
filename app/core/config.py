@@ -44,13 +44,13 @@ class Settings(BaseSettings):
     REFRESH_TOKEN_EXPIRE_DAYS: int = Field(default=7, description="Refresh Token 过期时间（天）")
 
     # ==================== CORS 配置 ====================
-    CORS_ORIGINS: List[str] = Field(
+    CORS_ORIGINS: list[str] = Field(
         default=["http://localhost:3000", "http://localhost:8080", "http://127.0.0.1:3000"],
         description="允许的跨域来源"
     )
     CORS_ALLOW_CREDENTIALS: bool = True
-    CORS_ALLOW_METHODS: List[str] = ["*"]
-    CORS_ALLOW_HEADERS: List[str] = ["*"]
+    CORS_ALLOW_METHODS: list[str] = ["*"]
+    CORS_ALLOW_HEADERS: list[str] = ["*"]
 
     # ==================== 数据库配置 ====================
     DATABASE_URL: str = Field(description="数据库连接 URL")
@@ -84,7 +84,7 @@ class Settings(BaseSettings):
 
     # ==================== 文件上传配置 ====================
     MAX_UPLOAD_SIZE: int = Field(default=50 * 1024 * 1024, description="最大上传文件大小（字节）")
-    ALLOWED_UPLOAD_TYPES: List[str] = Field(
+    ALLOWED_UPLOAD_TYPES: list[str] = Field(
         default=["pdf", "docx", "doc", "txt", "md", "html", "csv"],
         description="允许的上传文件类型"
     )

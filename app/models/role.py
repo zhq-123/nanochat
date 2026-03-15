@@ -89,14 +89,14 @@ class Role(BaseModel):
         lazy="joined",
     )
 
-    permissions: Mapped[List["Permission"]] = relationship(
+    permissions: Mapped[list["Permission"]] = relationship(
         "Permission",
         secondary="role_permissions",
         back_populates="roles",
         lazy="selectin",
     )
 
-    users: Mapped[List["User"]] = relationship(
+    users: Mapped[list["User"]] = relationship(
         "User",
         secondary="user_roles",
         back_populates="roles",
@@ -110,7 +110,7 @@ class Role(BaseModel):
         lazy="joined",
     )
 
-    children: Mapped[List["Role"]] = relationship(
+    children: Mapped[list["Role"]] = relationship(
         "Role",
         back_populates="parent",
         lazy="selectin",

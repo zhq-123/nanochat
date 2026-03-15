@@ -221,13 +221,6 @@ async def get_optional_user(
         return None
 
 
-# 类型别名，便于路由中使用
-CurrentUser = Annotated[User, Depends(get_current_user)]
-CurrentSuperuser = Annotated[User, Depends(get_current_superuser)]
-OptionalUser = Annotated[Optional[User], Depends(get_optional_user)]
-DBSession = Annotated[AsyncSession, Depends(get_db)]
-
-
 class PermissionChecker:
     """
     权限检查器

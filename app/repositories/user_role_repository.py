@@ -28,7 +28,7 @@ class UserRoleRepository(BaseRepository[UserRoleAssignment]):
         self,
         user_id: UUID,
         tenant_id: Optional[UUID] = None,
-    ) -> List[Role]:
+    ) -> list[Role]:
         """
         获取用户的角色
 
@@ -37,7 +37,7 @@ class UserRoleRepository(BaseRepository[UserRoleAssignment]):
             tenant_id: 租户ID（可选）
 
         Returns:
-            List[Role]: 角色列表
+            list[Role]: 角色列表
         """
         query = (
             select(Role)
@@ -165,7 +165,7 @@ class UserRoleRepository(BaseRepository[UserRoleAssignment]):
         self,
         role_id: UUID,
         tenant_id: UUID,
-    ) -> List[User]:
+    ) -> list[User]:
         """
         获取拥有指定角色的用户
 
@@ -174,7 +174,7 @@ class UserRoleRepository(BaseRepository[UserRoleAssignment]):
             tenant_id: 租户ID
 
         Returns:
-            List[User]: 用户列表
+            list[User]: 用户列表
         """
         result = await self.session.execute(
             select(User)

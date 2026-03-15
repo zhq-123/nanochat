@@ -32,7 +32,7 @@ class PermissionRepository(BaseRepository[Permission]):
         result = await self.session.execute(select(Permission).where(Permission.code == code))
         return result.scalar_one_or_none()
 
-    async def get_by_codes(self, codes: List[str]) -> List[Permission]:
+    async def get_by_codes(self, codes: list[str]) -> list[Permission]:
         """
         根据代码列表获取权限
 
@@ -40,14 +40,14 @@ class PermissionRepository(BaseRepository[Permission]):
             codes: 权限代码列表
 
         Returns:
-            List[Permission]: 权限列表
+            list[Permission]: 权限列表
         """
         result = await self.session.execute(
             select(Permission).where(Permission.code.in_(codes))
         )
         return list(result.scalars().all())
 
-    async def get_by_resource(self, resource: str) -> List[Permission]:
+    async def get_by_resource(self, resource: str) -> list[Permission]:
         """
         获取资源的所有权限
 
@@ -55,7 +55,7 @@ class PermissionRepository(BaseRepository[Permission]):
             resource: 资源类型
 
         Returns:
-            List[Permission]: 权限列表
+            list[Permission]: 权限列表
         """
         result = await self.session.execute(
             select(Permission)
@@ -84,7 +84,7 @@ class PermissionRepository(BaseRepository[Permission]):
 
         return grouped
 
-    async def init_system_permissions(self, permissions_data: List[dict]) -> int:
+    async def init_system_permissions(self, permissions_data: list[dict]) -> int:
         """
         初始化系统权限
 

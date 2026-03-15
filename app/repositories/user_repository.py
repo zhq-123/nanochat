@@ -102,7 +102,7 @@ class UserRepository(BaseRepository[User]):
         skip: int = 0,
         limit: int = 100,
         is_active: Optional[bool] = None,
-    ) -> List[User]:
+    ) -> list[User]:
         """
         获取租户下的用户列表
 
@@ -113,7 +113,7 @@ class UserRepository(BaseRepository[User]):
             is_active: 是否激活（可选过滤）
 
         Returns:
-            List[User]: 用户列表
+            list[User]: 用户列表
         """
         query = (
             select(User)
